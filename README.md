@@ -1,6 +1,6 @@
 # Personal Codex skills
 
-This Git repository is the source of truth for my personal Codex skills. Each skill is a top-level directory containing `SKILL.md`. Keep account credentials, machine-specific configuration, and private project data out of this public repository.
+This Git repository is the source of truth for my personal Codex skills. Each skill is a top-level directory containing `SKILL.md`. Keep account credentials, machine-specific configuration, and private project data out of this repository.
 
 ## First setup on another computer
 
@@ -20,7 +20,7 @@ New-Item -ItemType Directory -Force "$HOME\.agents" | Out-Null
 git clone https://github.com/calvindiao/personal-codex-skills.git "$HOME\.agents\skills"
 ```
 
-Restart Codex if the skill does not appear automatically. GitHub authentication is needed only when pushing changes.
+Authenticate with GitHub when accessing a private clone or pushing changes. Restart Codex if the skill does not appear automatically.
 
 If `$HOME/.agents/skills` already contains other skills, clone this repository elsewhere and link its individual skill directories into `$HOME/.agents/skills`. On macOS/Linux use `ln -s`; on Windows use a PowerShell directory junction (`New-Item -ItemType Junction`). Do not replace an existing skill with the same name without reviewing it.
 
