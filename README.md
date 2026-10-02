@@ -2,25 +2,25 @@
 
 [![Checks](https://github.com/calvindiao/personal-codex-skills/actions/workflows/checks.yml/badge.svg)](https://github.com/calvindiao/personal-codex-skills/actions/workflows/checks.yml)
 
-保存可复用的 agent skills 和个人沟通规则，让不同项目、不同主机上的 Codex 使用同一份来源。
+Reusable agent skills and personal communication preferences, with one shared source for Codex across projects and hosts.
 
-这里的 skill 提供任务所需的判断依据；沟通规则保持简短。按任务需要加载内容，保留 agent 选择方法的空间。
+Skills provide task-specific judgment. Communication preferences stay short. Load what the task needs and leave room for the agent to choose its approach.
 
-## 这里有什么
+## What's included
 
-| 内容 | 用途 | 何时读取 |
+| Content | Purpose | When to read |
 | --- | --- | --- |
-| [Evidence-led Engineering](evidence-led-engineering/SKILL.md) | 用可观察的行为判断调查、修改和发布检查是否完成 | 需要实际证据的工程任务；跳过简单修改 |
-| [沟通规则](instructions/AGENTS.md) | 回答先行、术语一致、保留条件和不确定性 | 安装后作为 Codex 的全局指令加载 |
-| [仓库维护入口](AGENTS.md) | 告诉维护此仓库的 agent 应该改哪里、检查什么 | 在这个仓库工作时 |
+| [Evidence-led Engineering](evidence-led-engineering/SKILL.md) | Use observable behavior to assess investigations, changes, and release checks | Engineering tasks that need evidence; skip trivial edits |
+| [Communication preferences](instructions/AGENTS.md) | Answer first, use consistent terms, and preserve conditions and uncertainty | Loaded as global Codex instructions after installation |
+| [Repository guidance](AGENTS.md) | Help agents find the right files and checks | When working in this repository |
 
-`SKILL.md` 使用开放的 Agent Skills 格式。当前安装说明与全局规则同步工具面向 Codex；Claude 等客户端的安装位置和扩展字段需要按各自文档处理。
+`SKILL.md` uses the open Agent Skills format. The installation guide and global instruction sync tool currently target Codex. Follow each client's documentation for Claude and other clients' installation paths and extension fields.
 
-## 已经安装过：更新并检查
+## Already installed: update and check
 
-进入本仓库的现有 clone。先确认 Git 拉取成功，再运行同步脚本。
+Open your existing clone. Confirm that Git finishes pulling successfully before running the sync script.
 
-macOS / Linux：
+macOS / Linux:
 
 ```sh
 git pull --ff-only
@@ -28,7 +28,7 @@ python3 scripts/sync-instructions.py
 python3 scripts/sync-instructions.py --check
 ```
 
-Windows PowerShell：
+Windows PowerShell:
 
 ```powershell
 git pull --ff-only
@@ -36,43 +36,43 @@ py -3 scripts/sync-instructions.py
 py -3 scripts/sync-instructions.py --check
 ```
 
-没有 `py` 启动器时，可用已安装的 `python`。运行环境为 Git 和 Python 3.10+；同步脚本无需第三方 Python 包。
+If the `py` launcher is unavailable, use your installed `python`. You need Git and Python 3.10+. The sync script needs no third-party Python packages.
 
-如果 skill 目录链接到这个 clone，拉取后即可使用新内容；如果以前复制过 skill，需要更新那份副本。全局沟通规则需要运行同步脚本。安装或更新后，新开 Codex 对话确认已加载。
+A skill linked to this clone uses the updated source after a pull. A copied skill needs its own update. Run the sync script to update global communication preferences. Start a new Codex conversation after installation or an update to confirm loading.
 
-**首次安装或新增主机：** 按[安装、迁移与恢复指南](docs/install.md)操作。它也覆盖已有 skill 目录、Windows、WSL、远程主机和自定义 `CODEX_HOME`。
+**First installation or another host:** follow the [installation, migration, and recovery guide](docs/install.md). It covers existing skill directories, Windows, WSL, remote hosts, and custom `CODEX_HOME` values.
 
-## 同步工具会做什么
+## What the sync tool does
 
-- 在全局 `AGENTS.md` 中添加或更新一个带标记的沟通规则区块。
-- 保留区块外的主机规则，并在修改已有文件前保存带时间戳的备份。
-- 检查模式只读。它检查安装内容是否与当前 clone 一致，并输出规则的 SHA-256。
-- 发现活动的 override、无关符号链接、损坏标记或同步期间的文件变化时，报告问题。
+- Adds or updates a marked communication preferences block in the global `AGENTS.md`.
+- Preserves host-specific instructions outside that block and saves a timestamped backup before changing an existing file.
+- Provides a read-only check against the current clone and prints the rules' SHA-256.
+- Reports active overrides, unrelated symlinks, damaged markers, and detected file changes during sync.
 
-共享区块由仓库管理。修改共享规则请编辑 `instructions/AGENTS.md`；主机特有规则放在区块外。同步不是后台服务，需要在各主机上显式运行。
+The repository owns the shared block. Edit shared preferences in `instructions/AGENTS.md`; keep host-specific instructions outside the block. Run sync explicitly on each host. It is not a background service.
 
-文件一致、Codex 已加载、任务效果变好，是三项不同的检查。脚本负责第一项；后两项需要新会话和实际任务确认。
+Matching files, loaded instructions, and improved task behavior are three separate checks. The script checks file consistency. Confirm loading in a new conversation and assess behavior through real tasks.
 
-## 目录结构
+## Repository layout
 
 ```text
-AGENTS.md                       仓库维护入口，不安装为全局规则
-README.md                       人类阅读入口
-instructions/AGENTS.md          共享沟通规则的唯一来源
-evidence-led-engineering/        独立的 skill 包，保留现有安装路径
-  SKILL.md                      适用范围与任务指导
-  agents/openai.yaml            Codex 的可选界面元数据
-docs/                           安装、设计理由与维护说明
-scripts/                        显式运行的同步和结构检查工具
-tests/                          隔离文件系统测试
-.github/workflows/checks.yml     macOS、Linux、Windows 的 CI 检查
+AGENTS.md                       Repository guidance; never installed globally
+README.md                       Human entry point
+instructions/AGENTS.md          Single source for shared communication preferences
+evidence-led-engineering/        Independent skill package; stable installation path
+  SKILL.md                      Scope and task guidance
+  agents/openai.yaml            Optional Codex UI metadata
+docs/                           Installation, design decisions, and maintenance
+scripts/                        Explicit sync and structural validation tools
+tests/                          Isolated filesystem tests
+.github/workflows/checks.yml     CI checks on macOS, Linux, and Windows
 ```
 
-新增 skill 使用同级的 `<skill-name>/SKILL.md`。只有实际需要时，才在包内添加 `references/`、`scripts/` 或 `assets/`。现有 skill 保持短小、自包含，无需额外路由层。
+Add skills as sibling `<skill-name>/SKILL.md` packages. Add `references/`, `scripts/`, or `assets/` only when needed. The existing skill is short and self-contained, without a separate routing layer.
 
-## 修改与验证
+## Changes and validation
 
-普通使用只需安装或更新。修改结构、脚本或 skill 时，按[维护指南](docs/maintaining.md)选择与改动相符的检查。
+Normal use requires installation or updates. When changing the structure, scripts, or skills, choose relevant checks from the [maintenance guide](docs/maintaining.md).
 
 ```sh
 python3 -m venv .venv
@@ -81,6 +81,6 @@ python3 -m venv .venv
 .venv/bin/python -m unittest discover -s tests -v
 ```
 
-这是 macOS / Linux 的开发命令；Windows 命令见[维护指南](docs/maintaining.md#运行确定性检查)。结构检查使用 PyYAML 和 CommonMark 解析库；它们不是同步脚本的运行依赖。测试使用临时目录，不访问真实账户或修改真实 Codex 配置。
+These are macOS / Linux development commands. See the [maintenance guide](docs/maintaining.md#run-deterministic-checks) for Windows commands. Structural validation uses PyYAML and a CommonMark parser. Neither is a sync runtime dependency. Tests use temporary directories without accessing real accounts or changing real Codex configuration.
 
-CI 检查格式、引用和脚本行为，不替代 skill 的实际任务评测。[设计说明与来源](docs/design.md)记录了采用 OpenAI、Anthropic 和 Agent Skills 指导的理由，以及兼容性边界。
+CI checks format, references, and script behavior. It does not replace task-based skill evaluation. [Design decisions and sources](docs/design.md) explain how this repository applies OpenAI, Anthropic, and Agent Skills guidance, including compatibility limits.

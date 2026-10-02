@@ -1,20 +1,20 @@
-# 安装、更新与恢复
+# Installation, updates, and recovery
 
-运行命令的主机和用户，应与实际运行 Codex 的主机和用户一致。先安装 Git 和 Python 3.10+。
+Run these commands on the host and under the user account that runs Codex. Install Git and Python 3.10+ first.
 
-## 已有安装
+## Existing installations
 
-保留现有 clone 和 skill 路径，先在 clone 中执行 README 的更新命令。不要为了使用新目录示例而再次安装同名 skill。
+Keep your existing clone and skill paths. Run the README's update commands from that clone. Do not reinstall the same skill just to match the new directory examples.
 
-早期安装可能把整个仓库 clone 到 `~/.agents/skills`，也可能把单个 skill 链接到 `~/.codex/skills`。本仓库保留顶层 skill 路径以兼容这些安装。当前官方推荐的个人 skill 目录是 `~/.agents/skills`；同名 skill 出现在多个发现目录时，可能重复出现，应先确认实际加载来源。[Codex 官方说明](https://learn.chatgpt.com/docs/build-skills)
+Earlier installations may have cloned the whole repository into `~/.agents/skills` or linked a single skill into `~/.codex/skills`. This repository keeps top-level skill paths compatible with those installations. The current recommended personal skill directory is `~/.agents/skills`. Skills with the same name in multiple discovery directories may appear more than once; confirm the source actually loaded. [Official Codex guidance](https://learn.chatgpt.com/docs/build-skills)
 
-如果旧安装是复制目录，Git 拉取只更新 clone，不会更新副本。比较并保留副本中的修改后，更新副本或改为链接；不要直接覆盖未知内容。
+If the old installation copied a skill directory, pulling Git updates the clone but not that copy. Compare and preserve local changes before updating the copy or replacing it with a link. Do not overwrite unknown content.
 
-## 新主机：clone 到工作目录
+## New host: clone into a working directory
 
-选择一个稳定的目录保存仓库；下例使用 `~/src`。仓库与个人 skill 发现目录分开，便于同时安装其他来源的 skill。
+Choose a stable location for the repository. This example uses `~/src`. Keeping the clone separate from the personal skill discovery directory makes it easier to install skills from other sources.
 
-macOS / Linux：
+macOS / Linux:
 
 ```sh
 mkdir -p "$HOME/src"
@@ -22,7 +22,7 @@ git clone https://github.com/calvindiao/personal-codex-skills.git "$HOME/src/per
 cd "$HOME/src/personal-codex-skills"
 ```
 
-Windows PowerShell：
+Windows PowerShell:
 
 ```powershell
 New-Item -ItemType Directory -Force "$HOME\src" | Out-Null
@@ -30,13 +30,13 @@ git clone https://github.com/calvindiao/personal-codex-skills.git "$HOME\src\per
 Set-Location "$HOME\src\personal-codex-skills"
 ```
 
-任一步失败时，先处理该错误，再继续后续步骤。
+If a step fails, resolve that error before continuing.
 
-## 安装所需的 skill
+## Install the skills you need
 
-以下命令从 clone 根目录运行，只链接 `evidence-led-engineering`。如果目标已存在，先查看它是否已指向此仓库。
+Run these commands from the clone's root. They link only `evidence-led-engineering`. If the target already exists, first check whether it points to this repository.
 
-macOS / Linux：
+macOS / Linux:
 
 ```sh
 mkdir -p "$HOME/.agents/skills"
@@ -48,7 +48,7 @@ else
 fi
 ```
 
-Windows PowerShell 使用目录 junction：
+Windows PowerShell uses a directory junction:
 
 ```powershell
 New-Item -ItemType Directory -Force "$HOME\.agents\skills" | Out-Null
@@ -56,48 +56,48 @@ $skillSource = Join-Path (Get-Location) "evidence-led-engineering"
 New-Item -ItemType Junction -Path "$HOME\.agents\skills\evidence-led-engineering" -Target $skillSource
 ```
 
-Codex 支持链接的 skill 目录。链接后，Git 更新会直接更新其来源；不要移动或删除 clone。无法创建链接时，可以复制整个 skill 包，但以后需要显式更新副本。[发现与链接规则](https://learn.chatgpt.com/docs/build-skills)
+Codex supports linked skill directories. Git updates the linked source directly, so keep the clone in place. If linking is unavailable, copy the whole skill package and explicitly update that copy later. [Discovery and symlink guidance](https://learn.chatgpt.com/docs/build-skills)
 
-## 安装共享沟通规则
+## Install shared communication preferences
 
-macOS / Linux：
+macOS / Linux:
 
 ```sh
 python3 scripts/sync-instructions.py
 python3 scripts/sync-instructions.py --check
 ```
 
-Windows PowerShell：
+Windows PowerShell:
 
 ```powershell
 py -3 scripts/sync-instructions.py
 py -3 scripts/sync-instructions.py --check
 ```
 
-没有 `py` 启动器时使用 `python`。脚本读取 `CODEX_HOME`；未设置时使用当前用户的 `.codex` 目录。可用 `--codex-home /path/to/profile` 明确指定目标。只复制沟通规则，不复制登录信息、MCP 配置或其他主机配置。
+Use `python` if the `py` launcher is unavailable. The script reads `CODEX_HOME`, falling back to the current user's `.codex` directory. Use `--codex-home /path/to/profile` to select a target explicitly. It copies communication preferences only, not login information, MCP configuration, or other host settings.
 
-| 退出码 | 含义 | 下一步 |
+| Exit code | Meaning | Next step |
 | --- | --- | --- |
-| `0` | 安装完成，或共享内容已匹配当前 clone | 新会话中确认加载 |
-| `1` | `--check` 发现缺少安装或内容不同 | 先确认 Git 版本，再运行安装命令 |
-| `2` | 文件、权限、override、链接或标记有问题 | 按具体错误检查后重试 |
+| `0` | Installation completed, or shared content matches the current clone | Confirm loading in a new conversation |
+| `1` | `--check` found a missing installation or different content | Confirm the Git version, then run installation |
+| `2` | A file, permission, override, link, or marker needs attention | Follow the specific error and retry |
 
-活动的 `AGENTS.override.md` 会优先于 `AGENTS.md`。同步脚本对此报错；根据该主机的需要，把共享规则合并进 override，或停用不再需要的 override 后再安装。手动合并进 override 不属于脚本管理范围。[全局指令加载顺序](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
+An active `AGENTS.override.md` takes precedence over `AGENTS.md`. The sync script reports this as an error. Depending on the host's needs, merge shared preferences into the override or disable an override you no longer need before installing. Manual merges into an override are outside the script's management scope. [Global instruction loading order](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
 
-## 确认生效
+## Confirm that it works
 
-1. 在各 clone 查看 `git rev-parse HEAD`，确认使用预期的 Git 版本。
-2. 运行 `--check`，比较输出的规则 SHA-256。它检查共享规则，不要求各主机的其他指令相同。
-3. 新开 Codex 对话，让它列出已加载的指令来源，确认沟通规则，并确认需要的 skill 可用。
+1. Run `git rev-parse HEAD` in each clone to confirm the intended Git version.
+2. Run `--check` and compare the rules' SHA-256. It checks shared preferences; other host instructions may differ.
+3. Start a new Codex conversation. Ask it to identify loaded instruction sources, confirm the communication preferences, and check that the required skill is available.
 
-项目指令可能覆盖全局指令中的冲突项。终端、桌面应用或远程服务也可能使用不同的用户或 `CODEX_HOME`，应检查实际执行环境。Windows 与 WSL 的用户目录分别管理。
+Project instructions can override conflicting global instructions. A terminal, desktop app, or remote service may use a different account or `CODEX_HOME`; check the actual execution environment. Windows and WSL have separate user directories.
 
-## 更新、回退与移除
+## Update, roll back, or remove
 
-更新：在 clone 中 `git pull --ff-only`，确认成功后重新运行规则同步及检查命令。需要固定版本的主机，可 checkout 已检查过的提交后再同步；升级时再选择新版本。
+**Update:** run `git pull --ff-only` in the clone. After a successful pull, rerun instruction sync and check. Hosts that need a fixed version can check out a tested commit before syncing, then choose a new version when upgrading.
 
-回退规则：安装器修改已有文件前，会打印 `AGENTS.md.backup-<时间戳>` 的路径。查看备份与当前文件的差异，保留安装后新增的主机规则，再恢复所需内容。若从未有过文件，首次安装不会产生备份。
+**Restore preferences:** before changing an existing file, the installer prints an `AGENTS.md.backup-<timestamp>` path. Compare the backup with the current file. Preserve host instructions added since installation, then restore the content you need. The first installation creates no backup if no file existed.
 
-移除共享规则：从全局文件中删除带 `personal-codex-skills:communication` 标记的完整区块，保留区块外内容。移除 skill 时删除对应安装链接或副本；保留需要继续使用的仓库来源。
+**Remove shared preferences:** delete the entire block marked `personal-codex-skills:communication` from the global file. Preserve content outside it. To remove a skill, delete its installation link or copy. Keep the repository source if it is still needed.
 
-避免同时用编辑器或其他同步程序修改同一个全局文件。脚本会尽力检测并发变化并原子替换文件，但不是多个写入程序之间的事务协调器。
+Avoid editing the same global file concurrently with an editor or another sync program. The script detects concurrent changes on a best-effort basis and replaces files atomically. It does not coordinate transactions among multiple writers.

@@ -59,7 +59,7 @@ Use [balanced parentheses](custom/guide(v2).md).
         (package / "custom" / "guide(v2).md").write_text("# Guide\n", encoding="utf-8")
         (package / "custom" / "icon.svg").write_text("<svg/>\n", encoding="utf-8")
         self.package("minimal-skill")
-        self.package("中文-skill")
+        self.package("\u4e2d\u6587-skill")
         self.assertIn("Validated 3 skill package(s).", self.check().stdout)
 
     def test_invalid_yaml_and_required_field_types_fail(self):

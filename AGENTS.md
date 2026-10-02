@@ -2,6 +2,8 @@
 
 This repository contains portable skill packages and shared Codex communication preferences.
 
+Write repository documentation and reusable instructions in English. Use the user's language in conversation.
+
 ## Map
 
 - `README.md`: human entry point; `docs/install.md`: installation, updates, recovery.
